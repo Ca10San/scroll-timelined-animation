@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <style>
+            .animationWrapper {     
+                position: relative;    
+                overflow-x: hidden;
+                max-width: 1024px;
+            }
+
+            .framesWrapper {
+                display: flex;
+                flex-direction: row;        
+            }            
+        </style>
+
+        <script>    
+        function calculateCurrentOffset(minPageOffset, deltaOffset, framesWidth) {
+            let positionOffset =  Math.floor((window.pageYOffset - minPageOffset) / deltaOffset);
+            return frameOffset = (positionOffset * framesWidth) * -1;
+        }
+
+        function updateImage(framesWrapper, minPageOffset, maxWrapperOffset, deltaOffset, framesWidth) {    
+            let frameOffset = calculateCurrentOffset(minPageOffset, deltaOffset, framesWidth);
+            framesWrapper.style.setProperty('transform', `translateX(${ frameOffset > maxWrapperOffset ? frameOffset : maxWrapperOffset }px)`);
+        }
+
+        function calculateMaxOffset(framesAmount, framesWidth) {
+            return ((framesAmount - 1) * framesWidth) * -1
+        }
+
+        function instantiateFrames(framesAmount, framesBaseURL) {
+            let frames = [];
+
+            for (let index = 1; index <= framesAmount; index++) {
+                let newFrame = document.createElement('img');
+                newFrame.className = 'animationFrame';        
+                newFrame.src = framesBaseURL + index + '.jpg';
+
+                frames.push(newFrame);
+            }
+            
+            return frames;
+        }
+
+        function buildFramesWrapper(framesAmount, framesBaseURL) {    
+            const framesWrapper = document.createElement('div');
+            framesWrapper.className = 'framesWrapper';
+            const instantiatedFrames = instantiateFrames(framesAmount, framesBaseURL);
+
+            for(let index = 0; index < instantiatedFrames.length; index++) {
+                framesWrapper.appendChild(instantiatedFrames[index]);
+            }
+
+            return framesWrapper;
+        }
+
+        function instantiateAnimation(
+            animationWrapperIDSelector, 
+            minPageOffset, 
+            maxPageOffset, 
+            framesAmount,
+            framesBaseURL
+        ) {
+            const animationWrapper = document.getElementById(animationWrapperIDSelector);
+
+            if(animationWrapper) {
+                if(!animationWrapper.className.includes('animationWrapper')) {
+                    animationWrapper.className = 'animationWrapper';
+                }
+                const deltaOffset = (maxPageOffset - minPageOffset) / framesAmount;
+
+                const framesWrapper = buildFramesWrapper(framesAmount, framesBaseURL);
+                animationWrapper.appendChild(framesWrapper);
+
+                const framesWidth = animationWrapper.getBoundingClientRect().width;
+                const maxWrapperOffset = calculateMaxOffset(framesAmount, framesWidth);
+
+                window.addEventListener('scroll', function () {
+                    if(
+                        (window.pageYOffset > minPageOffset) 
+                        && (window.pageYOffset < maxPageOffset)
+                    ) {
+                        setFixedWrapper(animationWrapper);
+                        updateImage(framesWrapper, minPageOffset, maxWrapperOffset, deltaOffset, framesWidth);
+                    } else {
+                        unsetFixedWrapper(animationWrapper);
+                    }
+                })
+            } else {
+                console.log(`animation wrapper ${animationWrapperIDSelector} not found`);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            instantiateAnimation(
+                'animationWrapper1', 
+                1400, 
+                1950, 
+                34, 
+                'http://localhost/img/image_example'
+            );
+        })
+        </script>
+    </head>
+    <body>
+        <div id="animationWrapper1"></div>
+    </body>
+</html>

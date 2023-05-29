@@ -1,15 +1,22 @@
 <html>
     <head>
         <style>
+            body {                
+                max-width: 100vw;
+                max-height: 100vh;
+                box-sizing: border-box;
+            }
+
             .animationWrapper {     
                 position: relative;    
                 overflow-x: hidden;
                 max-width: 1024px;
             }
-
+            
             .framesWrapper {
                 display: flex;
                 flex-direction: row;        
+                transition: transform 0s linear;
             }            
         </style>
 
@@ -80,10 +87,7 @@
                         (window.pageYOffset > minPageOffset) 
                         && (window.pageYOffset < maxPageOffset)
                     ) {
-                        setFixedWrapper(animationWrapper);
                         updateImage(framesWrapper, minPageOffset, maxWrapperOffset, deltaOffset, framesWidth);
-                    } else {
-                        unsetFixedWrapper(animationWrapper);
                     }
                 })
             } else {
@@ -94,15 +98,21 @@
         document.addEventListener('DOMContentLoaded', function () {
             instantiateAnimation(
                 'animationWrapper1', 
-                1400, 
-                1950, 
+                890, 
+                1500, 
                 34, 
-                'http://localhost/img/image_example'
+                './img/image_'
             );
         })
         </script>
     </head>
     <body>
+        <div style="height:100vh; border: 1px solid blue;">
+            <h1>nothing here</h1>
+        </div>
         <div id="animationWrapper1"></div>
+        <div style="height:100vh; border: 1px solid blue;">
+            <h1>nothing here too</h1>
+        </div>
     </body>
 </html>
